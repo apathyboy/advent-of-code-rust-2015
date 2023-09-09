@@ -1,8 +1,14 @@
 pub fn part_one(input: &str) -> Option<i32> {
-    let up_count = input.chars().filter(|&c| c == '(').count() as i32;
-    let down_count = input.chars().filter(|&c| c == ')').count() as i32;
+    let sum = input
+        .chars()
+        .map(|c| match c {
+            '(' => 1,
+            ')' => -1,
+            _ => panic!("Unexpected character"),
+        })
+        .sum();
 
-    Some(up_count - down_count)
+    Some(sum)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
