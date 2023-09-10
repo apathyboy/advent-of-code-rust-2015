@@ -25,8 +25,56 @@ pub fn part_one(input: &str) -> Option<usize> {
 }
 
 #[must_use]
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<usize> {
+    let current_house = Vector2::new(0, 0);
+
+    let santa_houses = input
+        .chars()
+        .enumerate()
+        .filter_map(|(i, c)| {
+            if i % 2 == 0 {
+                match c {
+                    '<' => Some(Vector2::new(-1, 0)),
+                    '>' => Some(Vector2::new(1, 0)),
+                    '^' => Some(Vector2::new(0, 1)),
+                    'v' => Some(Vector2::new(0, -1)),
+                    _ => None,
+                }
+            } else {
+                None
+            }
+        })
+        .scan(current_house, |state, change| {
+            *state += change;
+            Some(*state)
+        })
+        .collect::<HashSet<_>>();
+
+    let mut houses = input
+        .chars()
+        .enumerate()
+        .filter_map(|(i, c)| {
+            if i % 2 == 1 {
+                match c {
+                    '<' => Some(Vector2::new(-1, 0)),
+                    '>' => Some(Vector2::new(1, 0)),
+                    '^' => Some(Vector2::new(0, 1)),
+                    'v' => Some(Vector2::new(0, -1)),
+                    _ => None,
+                }
+            } else {
+                None
+            }
+        })
+        .scan(current_house, |state, change| {
+            *state += change;
+            Some(*state)
+        })
+        .collect::<HashSet<_>>();
+
+    houses.extend(santa_houses);
+
+    Some(houses.len())
 }
 
 fn main() {
@@ -48,6 +96,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 3);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(3));
     }
 }
