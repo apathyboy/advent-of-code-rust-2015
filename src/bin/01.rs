@@ -1,3 +1,5 @@
+/// # Panics
+#[must_use]
 pub fn part_one(input: &str) -> Option<i32> {
     let sum = input
         .chars()
@@ -11,7 +13,9 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(sum)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+/// # Panics
+#[must_use]
+pub fn part_two(input: &str) -> Option<usize> {
     let mut sum = 0;
 
     input
@@ -26,7 +30,7 @@ pub fn part_two(input: &str) -> Option<u32> {
             sum += x;
 
             if sum == -1 {
-                Some(idx as u32 + 1)
+                Some(idx + 1)
             } else {
                 None
             }

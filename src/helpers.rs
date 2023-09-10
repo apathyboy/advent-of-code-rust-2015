@@ -3,6 +3,7 @@
  * Example import from this file: `use advent_of_code::helpers::example_fn;`.
  */
 
+#[must_use]
 pub fn parse_dimensions(input: &str) -> Option<(i32, i32, i32)> {
     let mut dimensions = input.split('x');
     let length = dimensions.next()?.parse::<i32>().ok()?;

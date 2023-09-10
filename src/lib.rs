@@ -41,6 +41,8 @@ macro_rules! solve {
     }};
 }
 
+/// # Panics
+#[must_use]
 pub fn read_file(folder: &str, day: u8) -> String {
     let cwd = env::current_dir().unwrap();
 
@@ -54,11 +56,11 @@ fn parse_time(val: &str, postfix: &str) -> f64 {
     val.split(postfix).next().unwrap().parse().unwrap()
 }
 
+/// # Panics
+#[must_use]
 pub fn parse_exec_time(output: &str) -> f64 {
     output.lines().fold(0_f64, |acc, l| {
-        if !l.contains("elapsed:") {
-            acc
-        } else {
+        if l.contains("elapsed:") {
             let timing = l.split("(elapsed: ").last().unwrap();
             // use `contains` istd. of `ends_with`: string may contain ANSI escape sequences.
             // for possible time formats, see: https://github.com/rust-lang/rust/blob/1.64.0/library/core/src/time.rs#L1176-L1200
@@ -73,6 +75,8 @@ pub fn parse_exec_time(output: &str) -> f64 {
             } else {
                 acc
             }
+        } else {
+            acc
         }
     })
 }
@@ -131,45 +135,48 @@ pub mod aoc_cli {
         process::{Command, Output, Stdio},
     };
 
-    pub enum AocCliError {
+    pub enum Error {
         CommandNotFound,
         CommandNotCallable,
         BadExitStatus(Output),
         IoError,
     }
 
-    impl Display for AocCliError {
+    impl Display for Error {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
-                AocCliError::CommandNotFound => write!(f, "aoc-cli is not present in environment."),
-                AocCliError::CommandNotCallable => write!(f, "aoc-cli could not be called."),
-                AocCliError::BadExitStatus(_) => {
+                Error::CommandNotFound => write!(f, "aoc-cli is not present in environment."),
+                Error::CommandNotCallable => write!(f, "aoc-cli could not be called."),
+                Error::BadExitStatus(_) => {
                     write!(f, "aoc-cli exited with a non-zero status.")
                 }
-                AocCliError::IoError => write!(f, "could not write output files to file system."),
+                Error::IoError => write!(f, "could not write output files to file system."),
             }
         }
     }
 
-    pub fn check() -> Result<(), AocCliError> {
+    /// # Errors
+    pub fn check() -> Result<(), Error> {
         Command::new("aoc")
             .arg("-V")
             .output()
-            .map_err(|_| AocCliError::CommandNotFound)?;
+            .map_err(|_| Error::CommandNotFound)?;
         Ok(())
     }
 
-    pub fn read(day: u8, year: Option<u16>) -> Result<Output, AocCliError> {
+    /// # Errors
+    pub fn read(day: u8, year: Option<u16>) -> Result<Output, Error> {
         // TODO: output local puzzle if present.
         let args = build_args("read", &[], day, year);
         call_aoc_cli(&args)
     }
 
-    pub fn download(day: u8, year: Option<u16>) -> Result<Output, AocCliError> {
+    /// # Errors
+    pub fn download(day: u8, year: Option<u16>) -> Result<Output, Error> {
         let input_path = get_input_path(day);
 
         let puzzle_path = get_puzzle_path(day);
-        create_dir_all("src/puzzles").map_err(|_| AocCliError::IoError)?;
+        create_dir_all("src/puzzles").map_err(|_| Error::IoError)?;
 
         let args = build_args(
             "download",
@@ -192,7 +199,7 @@ pub mod aoc_cli {
             println!("🎄 Successfully wrote puzzle to \"{}\".", &puzzle_path);
             Ok(output)
         } else {
-            Err(AocCliError::BadExitStatus(output))
+            Err(Error::BadExitStatus(output))
         }
     }
 
@@ -219,7 +226,7 @@ pub mod aoc_cli {
         cmd_args
     }
 
-    fn call_aoc_cli(args: &[String]) -> Result<Output, AocCliError> {
+    fn call_aoc_cli(args: &[String]) -> Result<Output, Error> {
         if cfg!(debug_assertions) {
             println!("Calling >aoc with: {}", args.join(" "));
         }
@@ -229,6 +236,6 @@ pub mod aoc_cli {
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .output()
-            .map_err(|_| AocCliError::CommandNotCallable)
+            .map_err(|_| Error::CommandNotCallable)
     }
 }

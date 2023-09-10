@@ -9,16 +9,18 @@ fn calculate_paper(length: i32, width: i32, height: i32) -> i32 {
 }
 
 fn calculate_ribbon(length: i32, width: i32, height: i32) -> i32 {
-    let mut dimensions = vec![length, width, height];
-    dimensions.sort();
+    let mut dimensions = [length, width, height];
+    dimensions.sort_unstable();
     let smallest_side = dimensions[0];
     let second_smallest_side = dimensions[1];
     let volume = length * width * height;
     2 * smallest_side + 2 * second_smallest_side + volume
 }
 
-pub fn part_one(_input: &str) -> Option<i32> {
-    let total_paper: i32 = _input
+/// # Panics
+#[must_use]
+pub fn part_one(input: &str) -> Option<i32> {
+    let total_paper: i32 = input
         .lines()
         .map(|line| match parse_dimensions(line) {
             Some((l, w, h)) => calculate_paper(l, w, h),
@@ -29,8 +31,10 @@ pub fn part_one(_input: &str) -> Option<i32> {
     Some(total_paper)
 }
 
-pub fn part_two(_input: &str) -> Option<i32> {
-    let total_ribbon: i32 = _input
+/// # Panics
+#[must_use]
+pub fn part_two(input: &str) -> Option<i32> {
+    let total_ribbon: i32 = input
         .lines()
         .map(|line| match parse_dimensions(line) {
             Some((l, w, h)) => calculate_ribbon(l, w, h),
