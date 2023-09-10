@@ -3,22 +3,23 @@ use std::collections::HashSet;
 
 #[must_use]
 pub fn part_one(input: &str) -> Option<usize> {
-    let current_house = Vector2::new(0, 0);
-
     let houses = input
         .chars()
-        .filter_map(|c| match c {
-            '<' => Some(Vector2::new(-1, 0)),
-            '>' => Some(Vector2::new(1, 0)),
-            '^' => Some(Vector2::new(0, 1)),
-            'v' => Some(Vector2::new(0, -1)),
-            _ => None,
-        })
-        .scan(current_house, |state, change| {
-            *state += change;
-            Some(*state)
-        })
-        .collect::<HashSet<_>>()
+        .fold(
+            (Vector2::new(0, 0), HashSet::new()),
+            |(mut pos, mut visited), c| {
+                match c {
+                    '<' => pos.x -= 1,
+                    '>' => pos.x += 1,
+                    '^' => pos.y += 1,
+                    'v' => pos.y -= 1,
+                    _ => {}
+                }
+                visited.insert(pos);
+                (pos, visited)
+            },
+        )
+        .1
         .len();
 
     Some(houses)
@@ -26,55 +27,32 @@ pub fn part_one(input: &str) -> Option<usize> {
 
 #[must_use]
 pub fn part_two(input: &str) -> Option<usize> {
-    let current_house = Vector2::new(0, 0);
+    let initial_state = (Vector2::new(0, 0), Vector2::new(0, 0), HashSet::new());
 
-    let santa_houses = input
-        .chars()
-        .enumerate()
-        .filter_map(|(i, c)| {
-            if i % 2 == 0 {
-                match c {
-                    '<' => Some(Vector2::new(-1, 0)),
-                    '>' => Some(Vector2::new(1, 0)),
-                    '^' => Some(Vector2::new(0, 1)),
-                    'v' => Some(Vector2::new(0, -1)),
-                    _ => None,
-                }
+    let (_, _, visited) = input.chars().enumerate().fold(
+        initial_state,
+        |(mut santa_pos, mut robo_pos, mut visited), (idx, ch)| {
+            let current_pos = if idx % 2 == 0 {
+                &mut santa_pos
             } else {
-                None
+                &mut robo_pos
+            };
+
+            match ch {
+                '^' => current_pos.y += 1,
+                'v' => current_pos.y -= 1,
+                '>' => current_pos.x += 1,
+                '<' => current_pos.x -= 1,
+                _ => {}
             }
-        })
-        .scan(current_house, |state, change| {
-            *state += change;
-            Some(*state)
-        })
-        .collect::<HashSet<_>>();
 
-    let mut houses = input
-        .chars()
-        .enumerate()
-        .filter_map(|(i, c)| {
-            if i % 2 == 1 {
-                match c {
-                    '<' => Some(Vector2::new(-1, 0)),
-                    '>' => Some(Vector2::new(1, 0)),
-                    '^' => Some(Vector2::new(0, 1)),
-                    'v' => Some(Vector2::new(0, -1)),
-                    _ => None,
-                }
-            } else {
-                None
-            }
-        })
-        .scan(current_house, |state, change| {
-            *state += change;
-            Some(*state)
-        })
-        .collect::<HashSet<_>>();
+            visited.insert(*current_pos);
 
-    houses.extend(santa_houses);
+            (santa_pos, robo_pos, visited)
+        },
+    );
 
-    Some(houses.len())
+    Some(visited.len())
 }
 
 fn main() {
