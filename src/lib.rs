@@ -71,7 +71,7 @@ pub fn parse_exec_time(output: &str) -> f64 {
             } else if timing.contains("ms)") {
                 acc + parse_time(timing, "ms")
             } else if timing.contains("s)") {
-                acc + parse_time(timing, "s") * 1000_f64
+                parse_time(timing, "s").mul_add(1000_f64, acc)
             } else {
                 acc
             }
@@ -95,39 +95,6 @@ macro_rules! assert_approx_eq {
     }};
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_exec_time() {
-        assert_approx_eq!(
-            parse_exec_time(&format!(
-                "🎄 Part 1 🎄\n0 (elapsed: 74.13ns){}\n🎄 Part 2 🎄\n0 (elapsed: 50.00ns){}",
-                ANSI_RESET, ANSI_RESET
-            )),
-            0_f64
-        );
-
-        assert_approx_eq!(
-            parse_exec_time("🎄 Part 1 🎄\n0 (elapsed: 755µs)\n🎄 Part 2 🎄\n0 (elapsed: 700µs)"),
-            1.455_f64
-        );
-
-        assert_approx_eq!(
-            parse_exec_time("🎄 Part 1 🎄\n0 (elapsed: 70µs)\n🎄 Part 2 🎄\n0 (elapsed: 1.45ms)"),
-            1.52_f64
-        );
-
-        assert_approx_eq!(
-            parse_exec_time(
-                "🎄 Part 1 🎄\n0 (elapsed: 10.3s)\n🎄 Part 2 🎄\n0 (elapsed: 100.50ms)"
-            ),
-            10400.50_f64
-        );
-    }
-}
-
 pub mod aoc_cli {
     use std::{
         fmt::Display,
@@ -145,12 +112,12 @@ pub mod aoc_cli {
     impl Display for Error {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
-                Error::CommandNotFound => write!(f, "aoc-cli is not present in environment."),
-                Error::CommandNotCallable => write!(f, "aoc-cli could not be called."),
-                Error::BadExitStatus(_) => {
+                Self::CommandNotFound => write!(f, "aoc-cli is not present in environment."),
+                Self::CommandNotCallable => write!(f, "aoc-cli could not be called."),
+                Self::BadExitStatus(_) => {
                     write!(f, "aoc-cli exited with a non-zero status.")
                 }
-                Error::IoError => write!(f, "could not write output files to file system."),
+                Self::IoError => write!(f, "could not write output files to file system."),
             }
         }
     }
@@ -237,5 +204,38 @@ pub mod aoc_cli {
             .stderr(Stdio::inherit())
             .output()
             .map_err(|_| Error::CommandNotCallable)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_exec_time() {
+        assert_approx_eq!(
+            parse_exec_time(&format!(
+                "🎄 Part 1 🎄\n0 (elapsed: 74.13ns){}\n🎄 Part 2 🎄\n0 (elapsed: 50.00ns){}",
+                ANSI_RESET, ANSI_RESET
+            )),
+            0_f64
+        );
+
+        assert_approx_eq!(
+            parse_exec_time("🎄 Part 1 🎄\n0 (elapsed: 755µs)\n🎄 Part 2 🎄\n0 (elapsed: 700µs)"),
+            1.455_f64
+        );
+
+        assert_approx_eq!(
+            parse_exec_time("🎄 Part 1 🎄\n0 (elapsed: 70µs)\n🎄 Part 2 🎄\n0 (elapsed: 1.45ms)"),
+            1.52_f64
+        );
+
+        assert_approx_eq!(
+            parse_exec_time(
+                "🎄 Part 1 🎄\n0 (elapsed: 10.3s)\n🎄 Part 2 🎄\n0 (elapsed: 100.50ms)"
+            ),
+            10400.50_f64
+        );
     }
 }
