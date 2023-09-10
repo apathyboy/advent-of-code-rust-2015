@@ -8,6 +8,15 @@ fn calculate_paper(length: i32, width: i32, height: i32) -> i32 {
     2 * side1 + 2 * side2 + 2 * side3 + smallest_side
 }
 
+fn calculate_ribbon(length: i32, width: i32, height: i32) -> i32 {
+    let mut dimensions = vec![length, width, height];
+    dimensions.sort();
+    let smallest_side = dimensions[0];
+    let second_smallest_side = dimensions[1];
+    let volume = length * width * height;
+    2 * smallest_side + 2 * second_smallest_side + volume
+}
+
 pub fn part_one(_input: &str) -> Option<i32> {
     let total_paper: i32 = _input
         .lines()
@@ -20,8 +29,16 @@ pub fn part_one(_input: &str) -> Option<i32> {
     Some(total_paper)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(_input: &str) -> Option<i32> {
+    let total_ribbon: i32 = _input
+        .lines()
+        .map(|line| match parse_dimensions(line) {
+            Some((l, w, h)) => calculate_ribbon(l, w, h),
+            None => panic!("Unexpected input"),
+        })
+        .sum();
+
+    Some(total_ribbon)
 }
 
 fn main() {
@@ -50,6 +67,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 2);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(48));
     }
 }
