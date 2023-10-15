@@ -1,5 +1,79 @@
-pub fn part_one(_input: &str) -> Option<u32> {
-    None
+pub enum Command {
+    TurnOn,
+    TurnOff,
+    Toggle,
+}
+
+pub struct Instruction {
+    command: Command,
+    start: (u32, u32),
+    end: (u32, u32),
+}
+
+pub fn parse_line(line: &str) -> Option<Instruction> {
+    let parts: Vec<&str> = line.split_whitespace().collect();
+
+    // Verify we have enough parts to parse
+    if parts.len() < 4 {
+        return None;
+    }
+
+    let command = match parts[0] {
+        "toggle" => Command::Toggle,
+        "turn" => match parts[1] {
+            "on" => Command::TurnOn,
+            "off" => Command::TurnOff,
+            _ => return None,
+        },
+        _ => return None,
+    };
+
+    // This slices the vector depending on the command to get the coordinates parts
+    let coords_parts = if parts[0] == "toggle" { &parts[1..] } else { &parts[2..] };
+
+    let start_coords: Vec<&str> = coords_parts[0].split(',').collect();
+    let end_coords: Vec<&str> = coords_parts[2].split(',').collect();
+
+    // Verify we can actually split into coordinates
+    if start_coords.len() != 2 || end_coords.len() != 2 {
+        return None;
+    }
+
+    let start_x: u32 = start_coords[0].parse().ok()?;
+    let start_y: u32 = start_coords[1].parse().ok()?;
+    let end_x: u32 = end_coords[0].parse().ok()?;
+    let end_y: u32 = end_coords[1].parse().ok()?;
+
+    Some(
+        Instruction {
+            command,
+            start: (start_x, start_y),
+            end: (end_x, end_y),
+        })
+}
+
+pub fn part_one(input: &str) -> Option<u32> {
+    let mut grid: Vec<Vec<bool>> = vec![vec![false; 1000]; 1000];
+
+    for line in input.lines() {
+
+        match parse_line(line) {
+            Some(instruction) => {for x in instruction.start.0..=instruction.end.0 {
+                for y in instruction.start.1..=instruction.end.1 {
+                    match instruction.command {
+                        Command::TurnOn => grid[x as usize][y as usize] = true,
+                        Command::TurnOff => grid[x as usize][y as usize] = false,
+                        Command::Toggle => grid[x as usize][y as usize] = !grid[x as usize][y as usize],
+                    }
+                }
+            }},
+            None => println!("Invalid instruction: {}", line),
+        }
+    }
+
+    let count = grid.iter().flatten().filter(|&&x| x == true).count();
+
+    Some(count as u32)
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
