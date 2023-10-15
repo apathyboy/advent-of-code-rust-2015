@@ -29,7 +29,11 @@ pub fn parse_line(line: &str) -> Option<Instruction> {
     };
 
     // This slices the vector depending on the command to get the coordinates parts
-    let coords_parts = if parts[0] == "toggle" { &parts[1..] } else { &parts[2..] };
+    let coords_parts = if parts[0] == "toggle" {
+        &parts[1..]
+    } else {
+        &parts[2..]
+    };
 
     let start_coords: Vec<&str> = coords_parts[0].split(',').collect();
     let end_coords: Vec<&str> = coords_parts[2].split(',').collect();
@@ -44,40 +48,61 @@ pub fn parse_line(line: &str) -> Option<Instruction> {
     let end_x: u32 = end_coords[0].parse().ok()?;
     let end_y: u32 = end_coords[1].parse().ok()?;
 
-    Some(
-        Instruction {
-            command,
-            start: (start_x, start_y),
-            end: (end_x, end_y),
-        })
+    Some(Instruction {
+        command,
+        start: (start_x, start_y),
+        end: (end_x, end_y),
+    })
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let mut grid: Vec<Vec<bool>> = vec![vec![false; 1000]; 1000];
+    let mut grid: Vec<Vec<u32>> = vec![vec![0; 1000]; 1000];
 
     for line in input.lines() {
-
         match parse_line(line) {
-            Some(instruction) => {for x in instruction.start.0..=instruction.end.0 {
-                for y in instruction.start.1..=instruction.end.1 {
-                    match instruction.command {
-                        Command::TurnOn => grid[x as usize][y as usize] = true,
-                        Command::TurnOff => grid[x as usize][y as usize] = false,
-                        Command::Toggle => grid[x as usize][y as usize] = !grid[x as usize][y as usize],
+            Some(instruction) => {
+                for x in instruction.start.0..=instruction.end.0 {
+                    for y in instruction.start.1..=instruction.end.1 {
+                        match instruction.command {
+                            Command::TurnOn => grid[x as usize][y as usize] = 1,
+                            Command::TurnOff => grid[x as usize][y as usize] = 0,
+                            Command::Toggle => grid[x as usize][y as usize] ^= 1,
+                        }
                     }
                 }
-            }},
+            }
             None => println!("Invalid instruction: {}", line),
         }
     }
 
-    let count = grid.iter().flatten().filter(|&&x| x == true).count();
-
-    Some(count as u32)
+    Some(grid.iter().flatten().filter(|&&x| x == 1).sum())
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let mut grid: Vec<Vec<u32>> = vec![vec![0; 1000]; 1000];
+
+    for line in input.lines() {
+        match parse_line(line) {
+            Some(instruction) => {
+                for x in instruction.start.0..=instruction.end.0 {
+                    for y in instruction.start.1..=instruction.end.1 {
+                        match instruction.command {
+                            Command::TurnOn => grid[x as usize][y as usize] += 1,
+                            Command::TurnOff => {
+                                if grid[x as usize][y as usize] > 0 {
+                                    grid[x as usize][y as usize] -= 1
+                                }
+                            }
+                            Command::Toggle => grid[x as usize][y as usize] += 2,
+                        }
+                    }
+                }
+            }
+            None => println!("Invalid instruction: {}", line),
+        }
+    }
+
+    Some(grid.iter().flatten().sum())
 }
 
 fn main() {
