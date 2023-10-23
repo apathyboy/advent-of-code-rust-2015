@@ -9,22 +9,16 @@ fn parse_distance(line: &str) -> Option<((&str, &str), u32)> {
     Some(((from, to), distance))
 }
 
-fn generate_permutations<T: Clone>(items: &[T]) -> Vec<Vec<T>> {
-    if items.len() == 1 {
-        return vec![items.to_vec()];
-    }
-
-    let mut permutations = Vec::new();
-    for (i, item) in items.iter().enumerate() {
-        let mut items = items.to_vec();
-        items.remove(i);
-        let mut sub_permutations = generate_permutations(&items);
-        for sub_permutation in &mut sub_permutations {
-            sub_permutation.insert(0, item.clone());
+fn calculate_distance(distances: &HashMap<(&str, &str), u32>, cities: Vec<&&str>) -> u32 {
+    let mut distance = 0;
+    for i in 0..cities.len() - 1 {
+        if distances.contains_key(&(cities[i], cities[i + 1])) {
+            distance += distances.get(&(cities[i], cities[i + 1])).unwrap();
+        } else {
+            distance += distances.get(&(cities[i + 1], cities[i])).unwrap();
         }
-        permutations.append(&mut sub_permutations);
     }
-    permutations
+    distance
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -38,27 +32,12 @@ pub fn part_one(input: &str) -> Option<u32> {
         .unique()
         .collect_vec();
 
-    let mut min_distance = u32::max_value();
-
-    for permutation in generate_permutations(&cities) {
-        let mut distance = 0;
-        for i in 0..permutation.len() - 1 {
-            if distances.contains_key(&(permutation[i], permutation[i + 1])) {
-                distance += distances
-                    .get(&(permutation[i], permutation[i + 1]))
-                    .unwrap();
-            } else {
-                distance += distances
-                    .get(&(permutation[i + 1], permutation[i]))
-                    .unwrap();
-            }
-        }
-        if distance < min_distance {
-            min_distance = distance;
-        }
-    }
-
-    Some(min_distance)
+    cities
+        .iter()
+        .permutations(cities.len())
+        .unique()
+        .map(|permutation| calculate_distance(&distances, permutation))
+        .min()
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -72,27 +51,12 @@ pub fn part_two(input: &str) -> Option<u32> {
         .unique()
         .collect_vec();
 
-    let mut max_distance = 0;
-
-    for permutation in generate_permutations(&cities) {
-        let mut distance = 0;
-        for i in 0..permutation.len() - 1 {
-            if distances.contains_key(&(permutation[i], permutation[i + 1])) {
-                distance += distances
-                    .get(&(permutation[i], permutation[i + 1]))
-                    .unwrap();
-            } else {
-                distance += distances
-                    .get(&(permutation[i + 1], permutation[i]))
-                    .unwrap();
-            }
-        }
-        if distance > max_distance {
-            max_distance = distance;
-        }
-    }
-
-    Some(max_distance)
+    cities
+        .iter()
+        .permutations(cities.len())
+        .unique()
+        .map(|permutation| calculate_distance(&distances, permutation))
+        .max()
 }
 
 fn main() {
