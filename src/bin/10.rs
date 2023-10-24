@@ -5,22 +5,18 @@ pub fn make_sequence(input: Vec<char>) -> Vec<char> {
         .into_iter()
         .group_by(|elt| *elt)
         .into_iter()
-        .map(|(_, group)| group.collect::<Vec<char>>())
-        .map(|v| {
-            let first_char = v.first().unwrap();
-            let count = v.len().to_string();
-            format!("{}{}", count, first_char).chars().collect_vec()
+        .flat_map(|(_, group)| {
+            group.enumerate().max().map(|(i, elt)| {
+                let count = i + 1;
+                format!("{}{}", count, elt).chars().collect_vec()
+            })
         })
         .flatten()
-        .collect()
+        .collect_vec()
 }
 
 fn run_sequence(input: &str, times: u32) -> Vec<char> {
-    let mut sequence = input.chars().collect::<Vec<char>>();
-    for _ in 0..times {
-        sequence = make_sequence(sequence);
-    }
-    sequence
+    (0..times).fold(input.chars().collect_vec(), |acc, _| make_sequence(acc))
 }
 
 pub fn part_one(_input: &str) -> Option<usize> {
