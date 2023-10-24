@@ -1,30 +1,29 @@
 use itertools::Itertools;
 
-pub fn make_sequence(input: Vec<char>) -> Vec<char> {
+fn look_and_say(input: &str) -> String {
     input
+        .chars()
+        .group_by(|&char| char)
         .into_iter()
-        .group_by(|elt| *elt)
-        .into_iter()
-        .flat_map(|(_, group)| {
-            group.enumerate().max().map(|(i, elt)| {
-                let count = i + 1;
-                format!("{}{}", count, elt).chars().collect_vec()
-            })
+        .map(|(key, group)| {
+            let count = group.count();
+            let count_str: String = count.to_string();
+            let key_str: String = key.to_string();
+            count_str + &key_str
         })
-        .flatten()
-        .collect_vec()
+        .collect()
 }
 
-fn run_sequence(input: &str, times: u32) -> Vec<char> {
-    (0..times).fold(input.chars().collect_vec(), |acc, _| make_sequence(acc))
+fn run_sequence(input: &str, times: u32) -> String {
+    (0..times).fold(input.to_string(), |acc, _| look_and_say(&acc))
 }
 
-pub fn part_one(_input: &str) -> Option<usize> {
-    Some(run_sequence(_input.trim(), 40).len())
+pub fn part_one(input: &str) -> Option<usize> {
+    Some(run_sequence(input.trim(), 40).len())
 }
 
-pub fn part_two(_input: &str) -> Option<usize> {
-    Some(run_sequence(_input.trim(), 50).len())
+pub fn part_two(input: &str) -> Option<usize> {
+    Some(run_sequence(input.trim(), 50).len())
 }
 
 fn main() {
@@ -39,30 +38,12 @@ mod tests {
 
     #[test]
     fn test_making_sequence() {
-        assert_eq!(
-            make_sequence("1".chars().collect()),
-            "11".chars().collect::<Vec<char>>()
-        );
-        assert_eq!(
-            make_sequence("11".chars().collect()),
-            "21".chars().collect::<Vec<char>>()
-        );
-        assert_eq!(
-            make_sequence("21".chars().collect()),
-            "1211".chars().collect::<Vec<char>>()
-        );
-        assert_eq!(
-            make_sequence("1211".chars().collect()),
-            "111221".chars().collect::<Vec<char>>()
-        );
-        assert_eq!(
-            make_sequence("111221".chars().collect()),
-            "312211".chars().collect::<Vec<char>>()
-        );
-        assert_eq!(
-            run_sequence("1", 5),
-            "312211".chars().collect::<Vec<char>>()
-        )
+        assert_eq!(look_and_say("1"), "11".to_string());
+        assert_eq!(look_and_say("11"), "21".to_string());
+        assert_eq!(look_and_say("21"), "1211".to_string());
+        assert_eq!(look_and_say("1211"), "111221".to_string());
+        assert_eq!(look_and_say("111221"), "312211".to_string());
+        assert_eq!(run_sequence("1", 5), "312211".to_string())
     }
 
     #[test]
