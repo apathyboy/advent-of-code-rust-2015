@@ -1,3 +1,5 @@
+advent_of_code::solution!(15);
+
 pub fn part_one(_input: &str) -> Option<u32> {
     None
 }
@@ -6,25 +8,19 @@ pub fn part_two(_input: &str) -> Option<u32> {
     None
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 15);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 15);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), None);
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 15);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), None);
     }
 }

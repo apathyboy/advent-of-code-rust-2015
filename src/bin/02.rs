@@ -1,4 +1,6 @@
-use advent_of_code::helpers::parse_dimensions;
+use advent_of_code::parse_dimensions;
+
+advent_of_code::solution!(2);
 
 fn calculate_paper(length: i32, width: i32, height: i32) -> i32 {
     let side1 = length * width;
@@ -17,8 +19,6 @@ fn calculate_ribbon(length: i32, width: i32, height: i32) -> i32 {
     2 * smallest_side + 2 * second_smallest_side + volume
 }
 
-/// # Panics
-#[must_use]
 pub fn part_one(input: &str) -> Option<i32> {
     let total_paper: i32 = input
         .lines()
@@ -31,8 +31,6 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(total_paper)
 }
 
-/// # Panics
-#[must_use]
 pub fn part_two(input: &str) -> Option<i32> {
     let total_ribbon: i32 = input
         .lines()
@@ -43,12 +41,6 @@ pub fn part_two(input: &str) -> Option<i32> {
         .sum();
 
     Some(total_ribbon)
-}
-
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 2);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
 }
 
 #[cfg(test)]
@@ -63,14 +55,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 2);
-
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(101));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 2);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(48));
     }
 }

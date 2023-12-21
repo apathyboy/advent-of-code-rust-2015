@@ -1,5 +1,7 @@
 use itertools::Itertools;
 
+advent_of_code::solution!(10);
+
 fn look_and_say(input: &str) -> String {
     input
         .chars()
@@ -26,12 +28,6 @@ pub fn part_two(input: &str) -> Option<usize> {
     Some(run_sequence(input.trim(), 50).len())
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 10);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -48,13 +44,13 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 10);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), None);
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 10);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), None);
     }
 }

@@ -1,3 +1,5 @@
+advent_of_code::solution!(5);
+
 pub fn contains_vowels(s: &str) -> bool {
     s.chars().filter(|c| "aeiou".contains(*c)).count() >= 3
 }
@@ -39,25 +41,19 @@ pub fn part_two(input: &str) -> Option<u32> {
         .ok()
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 5);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 5);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(2));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 5);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(2));
     }
 }

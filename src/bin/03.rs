@@ -1,7 +1,8 @@
 use nalgebra::Vector2;
 use std::collections::HashSet;
 
-#[must_use]
+advent_of_code::solution!(3);
+
 pub fn part_one(input: &str) -> Option<usize> {
     let houses = input
         .chars()
@@ -25,7 +26,6 @@ pub fn part_one(input: &str) -> Option<usize> {
     Some(houses)
 }
 
-#[must_use]
 pub fn part_two(input: &str) -> Option<usize> {
     let initial_state = (Vector2::new(0, 0), Vector2::new(0, 0), HashSet::new());
 
@@ -55,25 +55,19 @@ pub fn part_two(input: &str) -> Option<usize> {
     Some(visited.len())
 }
 
-fn main() {
-    let input = &advent_of_code::read_file("inputs", 3);
-    advent_of_code::solve!(1, part_one, input);
-    advent_of_code::solve!(2, part_two, input);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_part_one() {
-        let input = advent_of_code::read_file("examples", 3);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_one(&input), Some(4));
     }
 
     #[test]
     fn test_part_two() {
-        let input = advent_of_code::read_file("examples", 3);
+        let input = advent_of_code::template::read_file("examples", DAY);
         assert_eq!(part_two(&input), Some(3));
     }
 }
