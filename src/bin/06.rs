@@ -114,12 +114,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(&input), Some(998996));
     }
 
     #[test]
     fn test_part_two() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(1001996));
     }
 }

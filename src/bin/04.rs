@@ -1,5 +1,3 @@
-use md5;
-
 advent_of_code::solution!(4);
 
 pub fn make_secret(input: &str, suffix: u32) -> String {

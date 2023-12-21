@@ -4,7 +4,7 @@ use std::collections::HashMap;
 advent_of_code::solution!(13);
 
 fn parse_line(line: &str) -> Option<(String, String, i32)> {
-    let parts = line.split(" ").collect::<Vec<&str>>();
+    let parts = line.split(' ').collect::<Vec<&str>>();
 
     if parts.len() != 11 {
         return None;
@@ -17,13 +17,11 @@ fn parse_line(line: &str) -> Option<(String, String, i32)> {
         .collect::<String>();
     let happiness = parts[3].parse::<i32>().ok()?;
 
-    let result = match parts[2] {
+    match parts[2] {
         "gain" => Some((guest1, guest2, happiness)),
         "lose" => Some((guest1, guest2, -happiness)),
-        _ => return None,
-    };
-
-    result
+        _ => None,
+    }
 }
 
 fn parse_guest_list(input: &str) -> HashMap<String, HashMap<String, i32>> {
@@ -77,11 +75,11 @@ pub fn part_two(input: &str) -> Option<i32> {
     for guest in guests {
         guest_map
             .entry("me".to_string())
-            .or_insert_with(std::collections::HashMap::new)
+            .or_default()
             .insert(guest.to_string(), 0);
         guest_map
             .entry(guest.to_string())
-            .or_insert_with(std::collections::HashMap::new)
+            .or_default()
             .insert("me".to_string(), 0);
     }
 
@@ -101,6 +99,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(286));
     }
 }

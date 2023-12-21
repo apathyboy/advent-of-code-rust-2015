@@ -72,18 +72,14 @@ pub fn part_one(input: &str) -> Option<usize> {
     input
         .lines()
         .map(count_chars)
-        .fold(Some(0), |acc, (chars, mem)| {
-            acc.and_then(|acc| Some(acc + chars - mem))
-        })
+        .try_fold(0, |acc, (chars, mem)| Some(acc + chars - mem))
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
     input
         .lines()
         .map(encode_chars)
-        .fold(Some(0), |acc, (chars, mem)| {
-            acc.and_then(|acc| Some(acc + mem - chars))
-        })
+        .try_fold(0, |acc, (chars, mem)| Some(acc + mem - chars))
 }
 
 #[cfg(test)]
@@ -93,12 +89,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(&input), Some(12));
     }
 
     #[test]
     fn test_part_two() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(19));
     }
 }

@@ -1,7 +1,7 @@
 advent_of_code::solution!(14);
 
 fn parse_line(line: &str) -> Option<(u32, u32, u32)> {
-    let parts = line.split(" ").collect::<Vec<&str>>();
+    let parts = line.split(' ').collect::<Vec<&str>>();
 
     if parts.len() != 15 {
         return None;
@@ -89,12 +89,12 @@ mod tests {
     #[test]
     fn test_part_one() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_one(&input), None);
+        assert_eq!(part_one(&input), Some(2660));
     }
 
     #[test]
     fn test_part_two() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(1564));
     }
 }

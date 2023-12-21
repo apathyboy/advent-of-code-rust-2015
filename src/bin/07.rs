@@ -71,7 +71,7 @@ fn parse_line(line: &str) -> (String, Signal) {
     let input = parts.next().unwrap();
     let wire = parts.next().unwrap();
 
-    let signal = match input.split(" ").collect::<Vec<_>>()[..] {
+    let signal = match input.split(' ').collect::<Vec<_>>()[..] {
         [input] => Signal::Input(parse_input(input)),
         [input, "AND", other] => Signal::Gate(Gate::And(parse_input(input), parse_input(other))),
         [input, "OR", other] => Signal::Gate(Gate::Or(parse_input(input), parse_input(other))),
@@ -88,23 +88,27 @@ fn parse_line(line: &str) -> (String, Signal) {
     (wire.to_string(), signal)
 }
 
-pub fn part_one(_input: &str) -> Option<u16> {
+fn run_signals(input: &str, wire: &str) -> Option<u16> {
     let mut circuit = Circuit {
         wires: HashMap::new(),
     };
 
     let mut cache: HashMap<String, u16> = HashMap::new();
 
-    for line in _input.lines() {
+    for line in input.lines() {
         let (wire, signal) = parse_line(line);
         circuit.wires.insert(wire, signal);
     }
 
-    Some(circuit.get_wire("a", &mut cache))
+    Some(circuit.get_wire(wire, &mut cache))
 }
 
-pub fn part_two(_input: &str) -> Option<u16> {
-    let part_one = part_one(_input).unwrap();
+pub fn part_one(input: &str) -> Option<u16> {
+    run_signals(input, "a")
+}
+
+pub fn part_two(input: &str) -> Option<u16> {
+    let part_one = part_one(input).unwrap();
 
     let mut circuit = Circuit {
         wires: HashMap::new(),
@@ -112,7 +116,7 @@ pub fn part_two(_input: &str) -> Option<u16> {
 
     let mut cache: HashMap<String, u16> = HashMap::new();
 
-    for line in _input.lines() {
+    for line in input.lines() {
         let (wire, signal) = parse_line(line);
         circuit.wires.insert(wire, signal);
     }
@@ -130,14 +134,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_part_one() {
+    fn test_running_signals() {
         let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_one(&input), None);
-    }
-
-    #[test]
-    fn test_part_two() {
-        let input = advent_of_code::template::read_file("examples", DAY);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(run_signals(&input, "h"), Some(65412));
     }
 }
