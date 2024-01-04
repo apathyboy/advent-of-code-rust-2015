@@ -28,7 +28,7 @@ fn parse(line: &str) -> Option<Ingredient> {
 }
 
 pub fn part_one(input: &str) -> Option<isize> {
-    let ingredients = input.lines().map(parse).flatten().collect::<Vec<_>>();
+    let ingredients = input.lines().filter_map(parse).collect::<Vec<_>>();
 
     let mut max_score = 0;
 
@@ -68,7 +68,7 @@ pub fn part_one(input: &str) -> Option<isize> {
 }
 
 pub fn part_two(input: &str) -> Option<isize> {
-    let ingredients = input.lines().map(parse).flatten().collect::<Vec<_>>();
+    let ingredients = input.lines().filter_map(parse).collect::<Vec<_>>();
 
     let mut max_score = 0;
 
