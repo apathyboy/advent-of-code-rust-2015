@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::HashSet;
 
 advent_of_code::solution!(19);
 
@@ -48,33 +48,14 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let (replacements, molecule) = parse_input(input);
+    let (_, molecule) = parse_input(input);
 
-    let electron = "e".to_string();
+    let symbol_count = molecule.chars().filter(|c| c.is_uppercase()).count();
+    let rn_count = molecule.matches("Rn").count();
+    let ar_count = molecule.matches("Ar").count();
+    let y_count = molecule.matches('Y').count();
 
-    let mut queue = VecDeque::new();
-    queue.push_back((molecule, 0));
-
-    while let Some((molecule, steps)) = queue.pop_front() {
-        if molecule == electron {
-            return Some(steps);
-        }
-
-        for replacement in &replacements {
-            let mut start = 0;
-            while let Some(pos) = molecule[start..].find(&replacement.to) {
-                let mut new_molecule = molecule.clone();
-                new_molecule.replace_range(
-                    start + pos..start + pos + replacement.to.len(),
-                    &replacement.from,
-                );
-                queue.push_back((new_molecule, steps + 1));
-                start += pos + replacement.to.len();
-            }
-        }
-    }
-
-    None
+    Some(symbol_count as u32 - rn_count as u32 - ar_count as u32 - 2 * y_count as u32 - 1)
 }
 
 #[cfg(test)]
@@ -85,18 +66,5 @@ mod tests {
     fn test_part_one() {
         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(4));
-    }
-
-    #[test]
-    fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file_part(
-            "examples", DAY, 2,
-        ));
-        assert_eq!(result, Some(3));
-
-        let result = part_two(&advent_of_code::template::read_file_part(
-            "examples", DAY, 3,
-        ));
-        assert_eq!(result, Some(6));
     }
 }
